@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Play, Pause } from "lucide-react";
+import axios from "axios";
+import { Pause, Play, Search } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTimer } from "../../components/auth/TimerContext";
-import useProyectos from "../../hooks/useProyectos";
 import NotificationSystem from "../../features/solicitudes_entradaTiempo/NotificationSystem/NotificationSystem";
 import useEtiquetas from "../../hooks/useEtiquetas";
-import axios from "axios";
+import useProyectos from "../../hooks/useProyectos";
 import { config } from "../../utils/config";
-import TagDropdown from "../common/TagDropdown";
 // Asegúrate de instalar lodash: npm install lodash
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
+
+// ✅ Import corregido: la D de Down debe ser mayúscula
+import TagDropDown from "../common/TagDropDown";
 
 const Navbar = ({ user, setActiveItem, refreshProject }) => {
   const {
@@ -19,7 +21,6 @@ const Navbar = ({ user, setActiveItem, refreshProject }) => {
     startTimer,
     stopTimer,
   } = useTimer();
-
   const { projects, loading, error, refreshProjects } = useProyectos();
   const { etiquetas, loading: loadingTags, refreshEtiquetas } = useEtiquetas();
 
@@ -27,49 +28,43 @@ const Navbar = ({ user, setActiveItem, refreshProject }) => {
   const [searchText, setSearchText] = useState("");
   const [description, setDescription] = useState("");
   const inputRef = useRef(null);
-
   const [selectedTagIds, setSelectedTagIds] = useState([]);
 
   // Carga la descripción y etiquetas del entry activo
   useEffect(() => {
     if (!activeEntry?.id) return;
-    setDescription(activeEntry.descripcion || '');
+    setDescription(activeEntry.descripcion || "");
     setSelectedTagIds([]);
     axios
-      .get(
-        `${config.BASE_URL}/entrada_tiempo/${activeEntry.id}/etiquetas`,
-        { headers: { Authorization: `Bearer ${config.AUTH_TOKEN}` } }
-      )
-      .then(res => {
-        const ids = Array.isArray(res.data) ? res.data.map(t => t.id) : [];
+      .get(`${config.BASE_URL}/entrada_tiempo/${activeEntry.id}/etiquetas`, {
+        headers: { Authorization: `Bearer ${config.AUTH_TOKEN}` },
+      })
+      .then((res) => {
+        const ids = Array.isArray(res.data) ? res.data.map((t) => t.id) : [];
         setSelectedTagIds(ids);
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   }, [activeEntry?.id]);
 
   const patchDescription = useCallback(
-  debounce(async (id, desc) => {
-
-    try {
-      const res = await axios.patch(
-        `${config.BASE_URL}/entrada_tiempo/${id}`,
-        { descripcion: desc },
-        { headers: { Authorization: `Bearer ${config.AUTH_TOKEN}` } }
-      );
-
-
-      if (refreshProject && activeProject) {
-        refreshProject(activeProject.id, { id, descripcion: desc });
+    debounce(async (id, desc) => {
+      try {
+        await axios.patch(
+          `${config.BASE_URL}/entrada_tiempo/${id}`,
+          { descripcion: desc },
+          { headers: { Authorization: `Bearer ${config.AUTH_TOKEN}` } }
+        );
+        if (refreshProject && activeProject) {
+          refreshProject(activeProject.id, { id, descripcion: desc });
+        }
+      } catch (err) {
+        console.error("[Frontend] ❌ Error en patchDescription:", err);
       }
-    } catch (err) {
-      console.error('[Frontend] ❌ Error en patchDescription:', err);
-    }
-  }, 500),
-  [refreshProject, activeProject]
-);
+    }, 500),
+    [refreshProject, activeProject]
+  );
 
-
-  const formatTime = s => {
+  const formatTime = (s) => {
     const secs = Math.floor(s);
     const h = String(Math.floor(secs / 3600)).padStart(2, "00");
     const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "00");
@@ -84,45 +79,35 @@ const Navbar = ({ user, setActiveItem, refreshProject }) => {
     }
   };
 
-  const handleProjectClick = proj => {
+  const handleProjectClick = (proj) => {
     startTimer(proj);
     setShowProjects(false);
     setSearchText("");
   };
 
-const handleTimerButton = () => {
-  if (isTimerRunning && activeProject) {
-    // 1) Si hay una descripción pendiente de enviar, la forzamos ahora
-    if (activeEntry?.id) {
-      patchDescription.flush();
+  const handleTimerButton = () => {
+    if (isTimerRunning && activeProject) {
+      if (activeEntry?.id) patchDescription.flush();
+
+      const newEntry = {
+        id: Date.now(),
+        duracion: time,
+        descripcion: description,
+      };
+      if (refreshProject) refreshProject(activeProject.id, newEntry);
+
+      stopTimer(description, () => {});
+      setDescription("");
+    } else {
+      handleSearchClick();
+      refreshProjects();
     }
+  };
 
-    // 2) Actualizamos la UI local
-    const newEntry = {
-      id: Date.now(),
-      duracion: time,
-      descripcion: description,
-    };
-    if (refreshProject) {
-      refreshProject(activeProject.id, newEntry);
-    }
-
-    // 3) Paramos el cronómetro
-    stopTimer(description, () => {});
-
-    // 4) Limpiamos el campo de descripción
-    setDescription("");
-  } else {
-    handleSearchClick();
-    refreshProjects();
-  }
-};
-
-
-  const handleTagChange = async newIds => {
+  const handleTagChange = async (newIds) => {
     if (!activeEntry?.id) return;
-    const removedIds = selectedTagIds.filter(id => !newIds.includes(id));
-    const addedIds = newIds.filter(id => !selectedTagIds.includes(id));
+    const removedIds = selectedTagIds.filter((id) => !newIds.includes(id));
+    const addedIds = newIds.filter((id) => !selectedTagIds.includes(id));
 
     try {
       if (removedIds.length) {
@@ -137,13 +122,16 @@ const handleTimerButton = () => {
       if (addedIds.length) {
         await axios.patch(
           `${config.BASE_URL}/entrada_tiempo/${activeEntry.id}/etiquetas`,
-          { etiqueta_ids: newIds },
+          {
+            etiqueta_ids: newIds,
+          },
           { headers: { Authorization: `Bearer ${config.AUTH_TOKEN}` } }
         );
       }
+
       setSelectedTagIds(newIds);
       refreshEtiquetas();
-      const nuevasEtiquetas = etiquetas.filter(t => newIds.includes(t.id));
+      const nuevasEtiquetas = etiquetas.filter((t) => newIds.includes(t.id));
       if (refreshProject) {
         refreshProject(activeProject.id, {
           id: activeEntry.id,
@@ -156,7 +144,7 @@ const handleTimerButton = () => {
   };
 
   useEffect(() => {
-    const onClickOutside = e => {
+    const onClickOutside = (e) => {
       if (inputRef.current && !inputRef.current.contains(e.target)) {
         setShowProjects(false);
       }
@@ -170,26 +158,32 @@ const handleTimerButton = () => {
       <div className="flex-1 max-w-xl relative" ref={inputRef}>
         <input
           type="text"
-          placeholder={isTimerRunning ? "Añade descripción..." : "¿En qué trabajas?"}
+          placeholder={
+            isTimerRunning ? "Añade descripción..." : "¿En qué trabajas?"
+          }
           className="w-full border rounded-full py-3 px-5 pl-12 focus:ring-2 focus:ring-blue-400"
           value={isTimerRunning ? description : searchText}
-          onChange={e => {
+          onChange={(e) => {
             if (isTimerRunning) {
               setDescription(e.target.value);
-              if (activeEntry?.id) patchDescription(activeEntry.id, e.target.value);
-            } else {
-              setSearchText(e.target.value);
-            }
+              if (activeEntry?.id)
+                patchDescription(activeEntry.id, e.target.value);
+            } else setSearchText(e.target.value);
           }}
           onClick={handleSearchClick}
         />
-        {!isTimerRunning && <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400" />}
+        {!isTimerRunning && (
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400" />
+        )}
         {!isTimerRunning && showProjects && (
           <div className="absolute left-0 right-0 bg-white border rounded-lg mt-1 shadow-lg z-10">
-            {loading && <p className="p-3 text-gray-500">Cargando proyectos...</p>}
+            {loading && (
+              <p className="p-3 text-gray-500">Cargando proyectos...</p>
+            )}
             {error && <p className="p-3 text-red-500">Error: {error}</p>}
-            {!loading && !error &&
-              projects.map(p => (
+            {!loading &&
+              !error &&
+              projects.map((p) => (
                 <div
                   key={p.id}
                   className="p-3 hover:bg-gray-50 cursor-pointer"
@@ -205,21 +199,27 @@ const handleTimerButton = () => {
       <div className="flex items-center space-x-6">
         {activeProject && isTimerRunning && (
           <div className="inline-flex items-center space-x-2">
-            <span className="px-4 py-1.5 bg-blue-100 text-blue-600 rounded-full">{activeProject.nombre}</span>
-            <TagDropdown
+            <span className="px-4 py-1.5 bg-blue-100 text-blue-600 rounded-full">
+              {activeProject.nombre}
+            </span>
+            <TagDropDown
               etiquetas={etiquetas}
               selectedIds={selectedTagIds}
               onChange={handleTagChange}
-              onCreateTag={() => refreshEtiquetas()}
+              onCreateTag={refreshEtiquetas}
               loading={loadingTags}
             />
           </div>
         )}
 
-        {user?.rol === "administrador" && <NotificationSystem setActiveItem={setActiveItem} />}
+        {user?.rol === "administrador" && (
+          <NotificationSystem setActiveItem={setActiveItem} />
+        )}
 
         <div className="flex items-center space-x-3">
-          <div className="btn-primary text-white font-mono px-4 py-2 rounded-md">{formatTime(time)}</div>
+          <div className="btn-primary text-white font-mono px-4 py-2 rounded-md">
+            {formatTime(time)}
+          </div>
           <button
             onClick={handleTimerButton}
             className="btn-primary rounded-full p-2.5 text-white"

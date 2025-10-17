@@ -1,14 +1,14 @@
 // TagDropdown.jsx
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { Tag, Search } from "lucide-react";
+import { Search, Tag } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
-export default function TagDropdown({
+export default function TagDropDown({
   etiquetas = [],
   selectedIds = [],
-  onChange = () => { },
-  onCreateTag = () => { },
+  onChange = () => {},
+  onCreateTag = () => {},
   loading = false,
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,23 +17,22 @@ export default function TagDropdown({
 
   // Cierra el dropdown si haces click fuera
   useEffect(() => {
-    const handleClickOutside = e => {
+    const handleClickOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
         setIsOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filtered = etiquetas.filter(t =>
+  const filtered = etiquetas.filter((t) =>
     t.nombre.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const toggleTag = id => {
+  const toggleTag = (id) => {
     const updated = selectedIds.includes(id)
-      ? selectedIds.filter(x => x !== id)
+      ? selectedIds.filter((x) => x !== id)
       : [...selectedIds, id];
     onChange(updated);
   };
@@ -44,7 +43,7 @@ export default function TagDropdown({
         className="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
         aria-label="Seleccionar etiquetas"
         onClick={() => {
-          setIsOpen(prev => {
+          setIsOpen((prev) => {
             const opening = !prev;
             // Si el menú se va a abrir, refresca etiquetas
             if (opening) {
@@ -67,7 +66,7 @@ export default function TagDropdown({
               placeholder="Buscar o añadir etiquetas"
               className="w-full bg-transparent placeholder-gray-500 focus:outline-none text-sm"
               value={filter}
-              onChange={e => setFilter(e.target.value)}
+              onChange={(e) => setFilter(e.target.value)}
             />
           </div>
 
@@ -80,7 +79,7 @@ export default function TagDropdown({
               <p className="p-3 text-gray-500 text-sm">No hay etiquetas</p>
             )}
             {!loading &&
-              filtered.map(tag => (
+              filtered.map((tag) => (
                 <label
                   key={tag.id}
                   className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
@@ -95,7 +94,6 @@ export default function TagDropdown({
                 </label>
               ))}
           </div>
-
         </div>
       )}
     </div>
