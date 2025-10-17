@@ -1,21 +1,23 @@
-"use client"
+"use client";
 
-import { useContext, useState, useEffect } from "react"
-import { motion, useAnimation } from "framer-motion"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Eye, EyeOff, Lock, Mail, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom"
-import { AuthContext } from "../components/auth/AuthContext"
-import { config } from "../utils/config"
-import axios from "axios"
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { motion, useAnimation } from "framer-motion";
+import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import * as z from "zod";
+import { AuthContext } from "../components/auth/AuthContext";
+import { config } from "../utils/config";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Por favor, introduce un email válido" }),
-  password: z.string().min(8, { message: "La contraseña debe tener al menos 8 caracteres" }),
+  password: z
+    .string()
+    .min(8, { message: "La contraseña debe tener al menos 8 caracteres" }),
   rememberMe: z.boolean().default(false),
-})
+});
 
 export default function LoginForm() {
   const { login } = useContext(AuthContext);
@@ -29,9 +31,9 @@ export default function LoginForm() {
   const [particles, setParticles] = useState([]);
 
   // Animation controls
-  const secondHandControls = useAnimation()
-  const minuteHandControls = useAnimation()
-  const hourHandControls = useAnimation()
+  const secondHandControls = useAnimation();
+  const minuteHandControls = useAnimation();
+  const hourHandControls = useAnimation();
 
   useEffect(() => {
     // Generate particles
@@ -40,13 +42,10 @@ export default function LoginForm() {
       x: Math.random() * 200 - 100,
       y: Math.random() * 200 - 100,
       size: Math.random() * 4 + 1,
-      id: i,
-      x: Math.random() * 200 - 100,
-      y: Math.random() * 200 - 100,
-      size: Math.random() * 4 + 1,
       duration: Math.random() * 20 + 10,
       delay: Math.random() * 5,
-    }))
+    }));
+
     setParticles(newParticles);
 
     // Start continuous animations
@@ -54,23 +53,35 @@ export default function LoginForm() {
       // Start continuous rotation for second hand
       secondHandControls.start({
         rotate: 360,
-        transition: { duration: 60, ease: "linear", repeat: Number.POSITIVE_INFINITY },
-      })
+        transition: {
+          duration: 60,
+          ease: "linear",
+          repeat: Number.POSITIVE_INFINITY,
+        },
+      });
 
       // Start continuous rotation for minute hand (slower)
       minuteHandControls.start({
         rotate: 360,
-        transition: { duration: 3600, ease: "linear", repeat: Number.POSITIVE_INFINITY },
-      })
+        transition: {
+          duration: 3600,
+          ease: "linear",
+          repeat: Number.POSITIVE_INFINITY,
+        },
+      });
 
       // Start continuous rotation for hour hand (even slower)
       hourHandControls.start({
         rotate: 360,
-        transition: { duration: 43200, ease: "linear", repeat: Number.POSITIVE_INFINITY },
-      })
-    }
+        transition: {
+          duration: 43200,
+          ease: "linear",
+          repeat: Number.POSITIVE_INFINITY,
+        },
+      });
+    };
 
-    animateHands()
+    animateHands();
   }, [secondHandControls, minuteHandControls, hourHandControls]);
 
   const {
@@ -86,50 +97,49 @@ export default function LoginForm() {
       password: "",
       rememberMe: false,
     },
-  })
+  });
 
   const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect()
+    const rect = e.currentTarget.getBoundingClientRect();
     setMousePosition({
       x: e.clientX - rect.left - rect.width / 2,
       y: e.clientY - rect.top - rect.height / 2,
-    })
-  }
+    });
+  };
 
-  const rememberMe = watch("rememberMe")
+  const rememberMe = watch("rememberMe");
 
   const onSubmit = async (values) => {
-    setIsLoading(true)
-    setError("")
-    setSuccessMessage("")
+    setIsLoading(true);
+    setError("");
+    setSuccessMessage("");
 
     try {
       const response = await axios.post(`${config.BASE_URL}/login`, {
         email: values.email,
         password: values.password,
-      })
+      });
 
-      const data = response.data
+      const data = response.data;
 
       if (response.status === 200 && data.user) {
-        login(data.user, data.accessToken)
-        setSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...")
-        setTimeout(() => navigate("/dashboard"), 2000)
+        login(data.user, data.accessToken);
+        setSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...");
+        setTimeout(() => navigate("/dashboard"), 2000);
       } else {
-        setError(data.message || "Email o contraseña inválidos")
+        setError(data.message || "Email o contraseña inválidos");
       }
     } catch (err) {
-      console.error("Error de inicio de sesión:", err)
-      setError("Error de conexión. Por favor, inténtalo de nuevo.")
+      console.error("Error de inicio de sesión:", err);
+      setError("Error de conexión. Por favor, inténtalo de nuevo.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
   const handleGoogleLogin = () => {
     // Redirige al navegador a tu backend para iniciar OAuth
     window.location.href = `${config.WEB_URL}/auth/google/redirect`;
-  }
-
+  };
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-gray-50 p-4">
@@ -165,11 +175,22 @@ export default function LoginForm() {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {error && <div className="rounded-md bg-red-100 p-3 text-red-700">{error}</div>}
-              {successMessage && <div className="rounded-md bg-green-100 p-3 text-green-700">{successMessage}</div>}
+              {error && (
+                <div className="rounded-md bg-red-100 p-3 text-red-700">
+                  {error}
+                </div>
+              )}
+              {successMessage && (
+                <div className="rounded-md bg-green-100 p-3 text-green-700">
+                  {successMessage}
+                </div>
+              )}
 
               <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email
                 </label>
                 <div className="relative">
@@ -178,12 +199,15 @@ export default function LoginForm() {
                     id="email"
                     type="email"
                     placeholder="nombre@ejemplo.com"
-                    className={`w-full rounded-md border ${errors.email ? "border-red-500" : "border-gray-300"
-                      } py-2 pl-10 pr-4 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                    className={`w-full rounded-md border ${
+                      errors.email ? "border-red-500" : "border-gray-300"
+                    } py-2 pl-10 pr-4 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
                     {...register("email")}
                   />
                 </div>
-                {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
               </div>
 
               {/* Reemplazo del botón actual de mostrar/ocultar contraseña */}
@@ -193,8 +217,9 @@ export default function LoginForm() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className={`w-full rounded-md border ${errors.password ? "border-red-500" : "border-gray-300"
-                    } py-2.5 pl-10 pr-12 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                  className={`w-full rounded-md border ${
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  } py-2.5 pl-10 pr-12 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   {...register("password")}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-10">
@@ -203,17 +228,19 @@ export default function LoginForm() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="!absolute !right-2 !top-2 !rounded-md !border !border-gray-200 !bg-transparent !p-1"
                   >
-                    {showPassword
-                      ? <EyeOff className="!h-4 !w-4 !text-gray-400" />
-                      : <Eye className="!h-4 !w-4 !text-gray-400" />}
+                    {showPassword ? (
+                      <EyeOff className="!h-4 !w-4 !text-gray-400" />
+                    ) : (
+                      <Eye className="!h-4 !w-4 !text-gray-400" />
+                    )}
                     <span className="sr-only">
-                      {showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      {showPassword
+                        ? "Ocultar contraseña"
+                        : "Mostrar contraseña"}
                     </span>
                   </button>
-
                 </div>
               </div>
-
 
               <button
                 type="submit"
@@ -236,7 +263,9 @@ export default function LoginForm() {
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-gray-500">O continúa con</span>
+                <span className="bg-white px-2 text-gray-500">
+                  O continúa con
+                </span>
               </div>
             </div>
 
@@ -269,7 +298,9 @@ export default function LoginForm() {
                   <path d="M1 1h22v22H1z" fill="none" />
                 </svg>
               )}
-              <span>{isGoogleLoading ? "Conectando..." : "Continuar con Google"}</span>
+              <span>
+                {isGoogleLoading ? "Conectando..." : "Continuar con Google"}
+              </span>
             </button>
           </motion.div>
 
@@ -280,7 +311,10 @@ export default function LoginForm() {
             className="text-center text-sm"
           >
             ¿No tienes cuenta?{" "}
-            <a href="/register" className="font-semibold text-blue-600 hover:text-blue-500">
+            <a
+              href="/register"
+              className="font-semibold text-blue-600 hover:text-blue-500"
+            >
               Regístrate
             </a>
           </motion.div>
@@ -360,28 +394,36 @@ export default function LoginForm() {
               <motion.div
                 className="w-[160px] h-[160px] rounded-full flex items-center justify-center"
                 style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%)",
+                  background:
+                    "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%)",
                   boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
                   backdropFilter: "blur(4px)",
                   border: "1px solid rgba(255, 255, 255, 0.18)",
                 }}
                 initial={{ rotate: 0 }}
                 animate={{ rotate: 360 }}
-                transition={{ duration: 120, ease: "linear", repeat: Number.POSITIVE_INFINITY }}
+                transition={{
+                  duration: 120,
+                  ease: "linear",
+                  repeat: Number.POSITIVE_INFINITY,
+                }}
               >
                 {/* Inner circle */}
                 <motion.div
                   className="w-[140px] h-[140px] rounded-full flex items-center justify-center"
                   style={{
-                    background: "linear-gradient(135deg, rgba(59, 130, 246, 0.6) 0%, rgba(37, 99, 235, 0.8) 100%)",
-                    boxShadow: "inset 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 4px 12px 0 rgba(0, 0, 0, 0.1)",
+                    background:
+                      "linear-gradient(135deg, rgba(59, 130, 246, 0.6) 0%, rgba(37, 99, 235, 0.8) 100%)",
+                    boxShadow:
+                      "inset 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 4px 12px 0 rgba(0, 0, 0, 0.1)",
                   }}
                 >
                   {/* Clock face */}
                   <motion.div
                     className="w-[120px] h-[120px] rounded-full flex items-center justify-center relative"
                     style={{
-                      background: "linear-gradient(135deg, rgba(30, 64, 175, 0.9) 0%, rgba(17, 24, 39, 0.95) 100%)",
+                      background:
+                        "linear-gradient(135deg, rgba(30, 64, 175, 0.9) 0%, rgba(17, 24, 39, 0.95) 100%)",
                       boxShadow: "inset 0 4px 8px 0 rgba(0, 0, 0, 0.2)",
                     }}
                   >
@@ -476,7 +518,9 @@ export default function LoginForm() {
                 <span className="font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
                   Desk
                 </span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">Timer</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
+                  Timer
+                </span>
               </motion.h1>
 
               <motion.div
@@ -501,5 +545,5 @@ export default function LoginForm() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
