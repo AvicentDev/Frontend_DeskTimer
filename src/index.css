@@ -1,0 +1,199 @@
+/* Import Tailwind - Place this at the beginning of your CSS file */
+@import "tailwindcss";
+
+/* ===== Reset / Base ===== */
+:root {
+  font-family: 'Inter', Helvetica, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  color: #213547;
+  background-color: #ffffff;
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+/* ===== Botones Base ===== */
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+
+/* ===== Botones Personalizados ===== */
+
+/* Botón primario vibrante */
+.btn-primary {
+  background-color: #2563eb !important; /* Azul vibrante de Tailwind */
+  border: none;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.4);
+}
+.btn-primary:hover {
+  background-color: #1d4ed8 !important; /* Azul más oscuro */
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(29, 78, 216, 0.5);
+}
+
+/* Botón teal vibrante */
+.btn-teal {
+  background-color: #14b8a6 !important; /* Teal vibrante de Tailwind */
+  border: none;
+  box-shadow: 0 4px 6px rgba(20, 184, 166, 0.4);
+}
+.btn-teal:hover {
+  background-color: #0d9488 !important; /* Teal más oscuro */
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(13, 148, 136, 0.5);
+}
+
+/* ===== Estilos para la Tabla ===== */
+table {
+  width: 100%;
+  border-collapse: separate; /* Permite border-spacing */
+  border-spacing: 0;
+  background-color: #fff;
+  border-radius: 0.5rem; /* Bordes redondeados */
+  overflow: hidden; /* Recorta bordes en celdas */
+  margin: 0;
+  color: #334155; /* Gris oscuro para texto */
+}
+
+/* Encabezado */
+table thead {
+  background-color: #f1f5f9; /* Gris claro */
+}
+table thead th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Cuerpo de la tabla */
+table tbody tr {
+  transition: background-color 0.2s;
+}
+table tbody tr:hover {
+  background-color: #f9fafb;
+}
+table tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+/* Elimina la línea del último row */
+table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== Estilos para "Badges" de Roles ===== */
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px; /* Píldora circular */
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  margin-left: 0.5rem;
+}
+
+.role-ADMINISTRADOR {
+  background-color: #ef4444; /* Rojo Tailwind */
+}
+.role-DESARROLLADOR {
+  background-color: #3b82f6; /* Azul Tailwind */
+}
+.role-DISEÑADOR {
+  background-color: #ec4899; /* Rosa Tailwind */
+}
+.role-TESTER {
+  background-color: #a855f7; /* Violeta Tailwind */
+}
+.role-OTRO {
+  background-color: #6b7280; /* Gris Tailwind */
+}
+
+/* ===== Sidebar Toggle Button Styles ===== */
+.sidebar-toggle {
+  all: unset; /* <- Elimina todos los estilos base del botón */
+  /* Vuelve a aplicar desde cero */
+  position: absolute;
+  top: 1.5rem;
+  left: 100%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 0 6px 6px 0;
+  font-size: 1.25rem;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+
+/* Estados del botón */
+.sidebar-toggle-open {
+  background-color: var(--color-light);
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-left: none;
+}
+
+.sidebar-toggle-closed {
+  background-color: var(--color-accent);
+  border-left: none;
+}
+
+/* Efecto hover */
+.sidebar-toggle:hover {
+  opacity: 0.95;
+}
+
+
+
+/* ===== Estilos claros para light-mode ===== */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
