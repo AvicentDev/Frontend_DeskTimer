@@ -175,8 +175,8 @@ export default function Register() {
   }
 
   const handleGoogleSignup = () => {
-    // Opción 1: redirige al backend de Laravel Socialite
-    window.location.href = `${config.WEB_URL}/auth/google/redirect`
+    // Redirige al backend para iniciar OAuth con Google
+    window.location.href = `${config.WEB_URL}/api/auth/google/redirect`
   }
 
   return (
