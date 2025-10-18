@@ -176,7 +176,7 @@ export default function Register() {
 
   const handleGoogleSignup = () => {
     // Redirige al backend para iniciar OAuth con Google
-    window.location.href = `${config.WEB_URL}/api/auth/google/redirect`
+    window.location.href = `${config.WEB_URL}/auth/google/redirect`
   }
 
   return (

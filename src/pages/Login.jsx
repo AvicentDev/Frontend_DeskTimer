@@ -147,7 +147,7 @@ export default function LoginForm() {
   };
   const handleGoogleLogin = () => {
     // Redirige al navegador a tu backend para iniciar OAuth
-    window.location.href = `${config.WEB_URL}/api/auth/google/redirect`;
+    window.location.href = `${config.WEB_URL}/auth/google/redirect`;
   };
 
   return (
