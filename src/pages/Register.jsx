@@ -122,7 +122,8 @@ export default function Register() {
       if (response.status === 200 && data.access_token) {
         login(data.data, data.access_token)
         setSuccessMessage("¡Registro exitoso! Redirigiendo...")
-        setTimeout(() => navigate("/dashboard"), 2000)
+        // Redirección inmediata después del login
+        navigate("/dashboard", { replace: true })
       } else {
         setError(data.message || "Error al registrar usuario")
       }
