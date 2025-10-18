@@ -117,13 +117,28 @@ export default function Register() {
       )
       
       console.log("✅ Respuesta del backend:", response)
+      console.log("📦 Datos de respuesta:", response.data)
       const data = response.data
 
-      if (response.status === 200 && data.access_token) {
-        login(data.data, data.access_token)
-        setSuccessMessage("¡Registro exitoso! Redirigiendo...")
-        // Redirección inmediata después del login
-        navigate("/dashboard", { replace: true })
+      // Verificar si la respuesta es exitosa
+      if (response.status === 200 || response.status === 201) {
+        // El token puede estar en data.access_token o data.token
+        const token = data.access_token || data.token
+        // Los datos del usuario pueden estar en data.data, data.user o directamente en data
+        const userData = data.data || data.user || data
+        
+        console.log("🔑 Token encontrado:", token ? "Sí" : "No")
+        console.log("👤 Usuario encontrado:", userData)
+        
+        if (token && userData) {
+          login(userData, token)
+          setSuccessMessage("¡Registro exitoso! Redirigiendo...")
+          // Redirección inmediata después del login
+          navigate("/dashboard", { replace: true })
+        } else {
+          setError("Respuesta del servidor incompleta. Token o datos de usuario no encontrados.")
+          console.error("❌ Estructura de respuesta inesperada:", data)
+        }
       } else {
         setError(data.message || "Error al registrar usuario")
       }
