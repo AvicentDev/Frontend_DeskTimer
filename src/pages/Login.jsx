@@ -122,10 +122,19 @@ export default function LoginForm() {
 
       const data = response.data;
 
-      if (response.status === 200 && data.user) {
-        login(data.user, data.accessToken);
-        setSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...");
-        setTimeout(() => navigate("/dashboard"), 2000);
+      if (response.status === 200 || response.status === 201) {
+        // El token puede estar en data.access_token o data.accessToken
+        const token = data.access_token || data.accessToken;
+        // Los datos del usuario pueden estar en data.data o data.user
+        const userData = data.data || data.user;
+        
+        if (token && userData) {
+          login(userData, token);
+          setSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...");
+          navigate("/dashboard", { replace: true });
+        } else {
+          setError("Respuesta del servidor incompleta");
+        }
       } else {
         setError(data.message || "Email o contraseña inválidos");
       }
