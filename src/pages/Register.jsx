@@ -98,6 +98,13 @@ export default function Register() {
     setError("")
     setSuccessMessage("")
 
+    console.log("📤 Enviando datos al backend:", {
+      name: values.name,
+      email: values.email,
+      password: "***hidden***",
+      rol: values.rol,
+    })
+
     try {
       const response = await axios.post(
         `${config.BASE_URL}/register`,
@@ -108,6 +115,8 @@ export default function Register() {
           rol: values.rol,
         }
       )
+      
+      console.log("✅ Respuesta del backend:", response)
       const data = response.data
 
       if (response.status === 200 && data.access_token) {
@@ -118,8 +127,32 @@ export default function Register() {
         setError(data.message || "Error al registrar usuario")
       }
     } catch (err) {
-      console.error("Error de registro:", err)
-      setError("Error de conexión. Por favor, inténtalo de nuevo.")
+      console.error("❌ Error de registro:", err)
+      
+      // Mostrar el error específico del backend
+      if (err.response) {
+        console.error("📥 Respuesta del backend:", err.response.data)
+        console.error("📊 Status code:", err.response.status)
+        
+        // Si el backend devolvió un mensaje de error
+        if (err.response.data?.error) {
+          setError(`Error: ${err.response.data.error}`)
+        } else if (err.response.data?.message) {
+          setError(err.response.data.message)
+        } else if (err.response.data?.errors) {
+          // Errores de validación
+          const errores = Object.values(err.response.data.errors).flat()
+          setError(errores.join(", "))
+        } else {
+          setError("Error del servidor. Por favor, inténtalo de nuevo.")
+        }
+      } else if (err.request) {
+        console.error("📡 No hubo respuesta del servidor")
+        setError("No se pudo conectar con el servidor. Verifica tu conexión.")
+      } else {
+        console.error("⚠️ Error configurando la petición:", err.message)
+        setError("Error de conexión. Por favor, inténtalo de nuevo.")
+      }
     } finally {
       setIsLoading(false)
     }
